@@ -39,21 +39,21 @@ public class CategoriesController
     }
 
     // add the appropriate annotation for a get action
-    @GetMapping("/id")
+    @GetMapping("/{id}")
     public Category getById(@PathVariable int id)
     {
         // get the category by id
         return categoryDao.getById(id);
     }
+    @GetMapping("/{id}/products")
+    public List<Product> getProductsByCategory(@PathVariable int id) {
+        return productDao.search(id, null, null, null);
+    }
 
     // the url to return all products in category 1 would look like this
     // https://localhost:8080/categories/1/products
-    @GetMapping("{categoryId}/products")
-    public List<Product> getProductsById(@PathVariable int categoryId)
-    {
-        // get a list of product by categoryId
-        return productDao.listByCategoryId(categoryId);
-    }
+
+
 
     // add annotation to call this method for a POST action
     // add annotation to ensure that only an ADMIN can call this function
