@@ -80,7 +80,7 @@ public class ShoppingCartController
     // https://localhost:8080/cart/products/15 (15 is the productId to be updated)
     // the BODY should be a ShoppingCartItem - quantity is the only value that will be updated
     @PutMapping("/products/{productID}")
-    public void updateProductQuantity(@PathVariable int productId, @RequestParam ShoppingCartItem item,
+    public void updateProductQuantity(@PathVariable int productId, @RequestBody ShoppingCartItem item,
                                       Principal principal) {
         try
         {
