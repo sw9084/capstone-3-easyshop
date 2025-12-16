@@ -11,7 +11,9 @@ import org.yearup.models.ShoppingCart;
 import org.yearup.models.ShoppingCartItem;
 import org.yearup.models.User;
 
+import java.math.BigDecimal;
 import java.security.Principal;
+import java.util.HashMap;
 
 // convert this class to a REST controller
 // only logged in users should have access to these actions
@@ -40,9 +42,19 @@ public class ShoppingCartController
             String userName = principal.getName();
             // find database user by userId
             User user = userDao.getByUserName(userName);
+            if (user == null) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found");
+            }
             int userId = user.getId();
 
-            return shoppingCartDao.getByUserId(userId);
+            ShoppingCart cart = shoppingCartDao.getByUserId(userId);
+            if (cart == null) {
+                cart = new ShoppingCart();
+                cart.setItems(new HashMap<>());
+
+            }
+
+            return cart;
 
         }
         catch(Exception e)
@@ -64,9 +76,7 @@ public class ShoppingCartController
             if (user == null) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found");
             }
-            int userId = user.getId();
-
-            shoppingCartDao.addProductToCart(userId,productId);
+           shoppingCartDao.addProductToCart(user.getId(), productId);
 
         }
         catch(Exception e)
