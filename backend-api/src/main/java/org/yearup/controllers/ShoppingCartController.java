@@ -16,7 +16,7 @@ import java.security.Principal;
 // convert this class to a REST controller
 // only logged in users should have access to these actions
 @RestController
-@RequestMapping
+@RequestMapping("/cart")
 public class ShoppingCartController
 {
     // a shopping cart requires
@@ -53,20 +53,20 @@ public class ShoppingCartController
     }
     // add a POST method to add a product to the cart - the url should be
     // https://localhost:8080/cart/products/15 (15 is the productId to be added
-    @PostMapping("/cart/products/{productsId}")
+    @PostMapping("/products/{productId}")
             public  void addProductToCart(@PathVariable int productId, Principal principal)
     {
         try
         {
             // get the currently logged in username
             String userName = principal.getName();
-            // find database user by userId
             User user = userDao.getByUserName(userName);
+            if (user == null) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found");
+            }
             int userId = user.getId();
 
             shoppingCartDao.addProductToCart(userId,productId);
-
-            // use the shoppingcartDao to get all items in the cart and return the cart
 
         }
         catch(Exception e)
