@@ -66,7 +66,6 @@ public class AuthenticationController {
         }
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ResponseEntity<User> register(@Valid @RequestBody RegisterUserDto newUser) {
 
@@ -87,6 +86,9 @@ public class AuthenticationController {
             profileDao.create(profile);
 
             return new ResponseEntity<>(user, HttpStatus.CREATED);
+        }
+        catch (ResponseStatusException e) {
+            throw e;
         }
         catch (Exception e)
         {
