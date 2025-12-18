@@ -2,139 +2,227 @@
 
 This project contains a Java Spring Boot backend and a static HTML/CSS/JavaScript frontend.
 
-When you unzip the archive, you should get a folder named `capstone-3` with this structure:
+## 📌 Overview
 
-```text
-capstone-3/
-  backend-api/      # Java Spring Boot backend (Maven)
-  frontend-ui/         # Static HTML, CSS, JS
-````
+EasyShop is a full-stack e-commerce web application built as part of the Year Up / Pluralsight Capstone 3 project.
 
----
+The application allows users to browse products, register and log in securely, manage a user profile, add items to a shopping cart, and place orders.
 
-## Requirements
-
-* **Java Development Kit (JDK) 17**
-* **IntelliJ IDEA Community Edition** (latest)
-* **MySQL Server** (e.g., MySQL 8.x)
-* **MySQL Workbench** (to run the database script)
-* Internet browser (Chrome, Firefox, Edge, Safari, etc.)
-
-You do **not** need to install Maven separately; IntelliJ can use its bundled Maven.
+This project demonstrates real-world backend and frontend integration using **Java Spring Boot**, **MySQL**, and a **vanilla JavaScript frontend**.
 
 ---
 
-## How to open the project in IntelliJ
+                                                    ## 🛠️ Technologies Used
 
-1. Unzip the project so you have a folder called `capstone-3`.
-2. Open IntelliJ IDEA (Community).
-3. Choose **File → Open...**.
-4. Select the `capstone-3` folder and click **Open**.
-5. When IntelliJ asks you to “Trust” the project, click **Trust**.
-6. IntelliJ will load the project with two modules:
+               ### Backend
 
-    * `backend-api` – Java Spring Boot backend
-    * `frontend-ui` – static HTML/CSS/JS
+  ➡️Java 17
 
-If IntelliJ asks you to configure an SDK, choose **JDK 17**.
+- Spring Boot
 
----
+- Spring Security (JWT Authentication)
 
-## Database setup (MySQL)
+- Maven
 
-Before you run the backend, you must create and initialize the database.
+- MySQL
 
-1. Make sure **MySQL Server** is running on your machine.
+- JDBC / DAO pattern
 
-2. Open **MySQL Workbench**.
+                ### Frontend
 
-3. Connect to your local MySQL server (for example, `localhost` with your MySQL username).
+- HTML
 
-4. In MySQL Workbench, go to **File → Open SQL Script...**.
+- CSS
 
-5. Navigate to the project folder and open:
+- JavaScript (Vanilla JS)
 
-   ```text
-   capstone-3/backend-api/database/create_database_easyshop.sql
-   ```
+- Live Server (VS Code)
 
-6. Once the script is open in Workbench, click the **Execute** button (the lightning bolt icon) to run the script.
+               ### Tools
 
-    * This will create the database and any required tables/data for the EasyShop application.
+- IntelliJ IDEA
 
-7. In IntelliJ, open:
+- Visual Studio Code
 
-   ```text
-   capstone-3/backend-api/src/main/resources/application.properties
-   ```
+- MySQL Workbench
 
-   and check the database connection settings (URL, username, and password).
-   Make sure:
-
-    * The **database name** matches what the SQL script created.
-    * The **username and password** match a valid MySQL user on your system.
-
-   If needed, you can either:
-
-    * Update `application.properties` to match your MySQL username/password, **or**
-    * Create a MySQL user in Workbench that matches the values in `application.properties`.
-
-Once the script has run successfully and the credentials match, the backend will be able to connect to the database.
+- Insomnia (API testing)
 
 ---
 
-## How to run the backend
+             ## 🧱 Project Structure
 
-1. In IntelliJ, make sure the project is fully indexed and Maven dependencies have been downloaded (you may see a progress bar at the bottom).
-2. In the **Run configuration** dropdown (top-right of IntelliJ), choose:
+   capstone-3
+│
 
-   **`Backend (Spring Boot)`**
+     ├── backend-api
 
-   (If it doesn’t exist, you can run the main class manually by right-clicking the `EasyshopApplication` class in `backend-api` and choosing **Run**.)
-3. Click the green **Run** triangle.
-4. The Spring Boot application will start and listen on:
+│   ├── controllers
 
-   ```text
-   http://localhost:8080
-   ```
+│   ├── data (DAOs)
 
-Check the Run tool window for any startup errors (for example, database connection problems). If there are errors, double-check your MySQL setup and `application.properties` values.
+│   ├── models
+
+│   ├── security
+
+│   └── EasyshopApplication.java
+
+│
+
+├── frontend-ui
+
+│   ├── css
+
+│   ├── images
+
+│   ├── js
+
+│   ├── templates
+
+│   └── index.html
+
+│
+
+└── README.md
+ 
+---
+
+             ## 🔐 Authentication & Security
+
+   - User authentication is handled using **JWT (JSON Web Tokens)**
+
+  - Passwords are securely hashed
+
+  - Protected endpoints require a valid token
+
+  - Spring Security ensures role-based access control
+
+          ### Auth Endpoints
+
+                | Method | Endpoint | Description |
+
+                 |------|---------|-------------|
+
+           | POST | `/register` | Create a new user |
+
+           | POST | `/login` | Authenticate user & receive JWT |
 
 ---
 
-## How to run the frontend
+         ## 👤 User Features
 
-1. In IntelliJ’s **Project** view, navigate to:
+- Register a new account
 
-   ```text
-   frontend-ui/index.html
-   ```
+- Log in and receive a JWT token
 
-2. Right-click `index.html` → **Open in Browser** → choose your browser.
+- View and update user profile
 
-3. Alternatively, you can locate `frontend-ui/index.html` in Finder / File Explorer and double-click it to open it in a browser.
+- Secure session handling on the frontend
 
 ---
 
-## Where to make changes
+## 🛒 Shopping Features
 
-* **Backend logic** (controllers, models, data access, etc.) is in:
+- View all products
 
-  ```text
-  backend-api/src/main/java/
-  ```
+- Filter products by category and price
 
-* **Backend configuration** (including database settings) is in:
+- Add products to shopping cart
 
-  ```text
-  backend-api/src/main/resources/
-  ```
+- View cart
 
-* **Frontend HTML/CSS/JS** is in the `frontend-ui` folder:
+- Clear cart
 
-  ```text
-  frontend-ui/index.html
-  frontend-ui/css/
-  frontend-ui/js/
-  frontend-ui/images/
-  ```
+- Create an order from cart items
+
+---
+
+## 🔁 API Endpoints (Core)
+
+### Categories
+
+GET /categories
+
+### Products
+
+GET /products
+
+GET /products/{id}
+
+### Cart
+
+GET    /cart
+
+POST   /cart/products/{productId}
+
+DELETE /cart
+
+### Orders
+
+POST /orders
+ 
+---
+
+## 🧪 Testing
+
+- All backend endpoints were tested using **Insomnia**
+
+- Authentication, authorization, and error handling were validated
+
+- Frontend behavior was tested through the browser UI
+
+---
+
+## 🚀 Running the Application
+
+### Backend
+
+1. Open `backend-api` in IntelliJ
+
+2. Ensure MySQL is running
+
+3. Update `application.properties` with database credentials
+
+4. Run `EasyshopApplication`
+
+Backend runs on:
+ 
+---
+
+### Frontend
+
+1. Open `frontend-ui` in VS Code
+
+2. Right-click `index.html`
+
+3. Select **Open with Live Server**
+
+Frontend runs on:
+http://127.0.0.1:5500
+ 
+---
+
+## 🧠 What I Learned
+
+- How to build a REST API using Spring Boot
+
+- Implementing JWT authentication
+
+- Using the DAO pattern for database access
+
+- Connecting frontend JavaScript to a secured backend
+
+- Managing user sessions and authorization
+
+- Debugging full-stack issues across frontend and backend
+
+---
+
+## 🌟 Author
+
+**Bethlehem**
+
+Year Up United – Application Development Track
+
+Capstone 3 Project
+ 

@@ -18,6 +18,7 @@ import java.util.HashMap;
 
 // convert this class to a REST controller
 // only logged in users should have access to these actions
+@CrossOrigin
 @RestController
 @RequestMapping("/cart")
 @PreAuthorize("isAuthenticated")

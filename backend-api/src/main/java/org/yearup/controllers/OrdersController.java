@@ -14,7 +14,7 @@ import org.yearup.models.User;
 import org.yearup.models.Order;
 
 import java.security.Principal;
-
+@CrossOrigin
 @RestController
 @RequestMapping("/orders")
 

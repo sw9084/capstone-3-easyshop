@@ -8,7 +8,7 @@ import org.yearup.data.ProfileDao;
 import org.yearup.models.Profile;
 import org.yearup.data.UserDao;
 import org.yearup.models.User;
-
+@CrossOrigin
 @RestController
 @RequestMapping("/profile")
 @PreAuthorize("isAuthenticated")
