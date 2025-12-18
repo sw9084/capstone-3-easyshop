@@ -19,18 +19,29 @@ import java.security.Principal;
 public class OrdersController {
     private final UserDao userDao;
     private final OrderDao orderDao;
-    public OrdersController(UserDao userDao, OrderDao orderDao) {
+    private final ShoppingCartDao shoppingCartDao;
+
+    public OrdersController(UserDao userDao, OrderDao orderDao, ShoppingCartDao shoppingCartDao) {
         this.userDao = userDao;
         this.orderDao = orderDao;
+        this.shoppingCartDao = shoppingCartDao;
     }
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public int createOrder( @RequestBody Order order, Principal principal) {
+    public int createOrder(Principal principal) {
+        if (principal == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
         String username = principal.getName();
         User user = userDao.getByUserName(username);
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found");
         }
-        return orderDao.createOrder(user.getId(), order);
+        Order oder = new Order();
+
+        int orderId = orderDao.createOrder(user.getId(), oder);
+
+        shoppingCartDao.clearCart(user.getId());
+        return orderId;
     }
 }
