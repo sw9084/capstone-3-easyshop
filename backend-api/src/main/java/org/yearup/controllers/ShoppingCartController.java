@@ -13,7 +13,6 @@ import org.yearup.models.ShoppingCart;
 import org.yearup.models.ShoppingCartItem;
 import org.yearup.models.User;
 
-import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.HashMap;
 
@@ -22,16 +21,14 @@ import java.util.HashMap;
 @RestController
 @RequestMapping("/cart")
 @PreAuthorize("isAuthenticated")
-public class ShoppingCartController
-{
+public class ShoppingCartController {
     // a shopping cart requires
     private ShoppingCartDao shoppingCartDao;
     private UserDao userDao;
     private ProductDao productDao;
 
     @Autowired
-    public ShoppingCartController(ShoppingCartDao shoppingCartDao, UserDao userDao,ProductDao productDao)
-    {
+    public ShoppingCartController(ShoppingCartDao shoppingCartDao, UserDao userDao, ProductDao productDao) {
         this.shoppingCartDao = shoppingCartDao;
         this.userDao = userDao;
         this.productDao = productDao;
@@ -59,17 +56,16 @@ public class ShoppingCartController
 
             return cart;
 
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
         }
 
     }
+
     // add a POST method to add a product to the cart - the url should be
     // https://localhost:8080/cart/products/15 (15 is the productId to be added
     @PostMapping("/products/{productId}")
-           public ResponseEntity<String> addProductToCart(@PathVariable int productId, Principal principal) {
+    public ResponseEntity<String> addProductToCart(@PathVariable int productId, Principal principal) {
 
         {
             try {
@@ -88,39 +84,43 @@ public class ShoppingCartController
     }
 
 
-        // add a PUT method to update an existing product in the cart - the url should be
-        // https://localhost:8080/cart/products/15 (15 is the productId to be updated)
-        // the BODY should be a ShoppingCartItem - quantity is the only value that will be updated
-        @PutMapping("/products/{productID}")
-        public void updateProductQuantity ( @PathVariable int productId, @RequestBody ShoppingCartItem item,
-        Principal principal){
-            try {
-                String userName = principal.getName();
-                User user = userDao.getByUserName(userName);
-                int userId = user.getId();
+    // add a PUT method to update an existing product in the cart - the url should be
+    // https://localhost:8080/cart/products/15 (15 is the productId to be updated)
+    // the BODY should be a ShoppingCartItem - quantity is the only value that will be updated
+    @PutMapping("/products/{productID}")
+    public void updateProductQuantity(@PathVariable int productId, @RequestBody ShoppingCartItem item,
+                                      Principal principal) {
+        try {
+            String userName = principal.getName();
+            User user = userDao.getByUserName(userName);
+            int userId = user.getId();
 
-                shoppingCartDao.updateProductQuantity(userId, productId, item.getQuantity());
+            shoppingCartDao.updateProductQuantity(userId, productId, item.getQuantity());
 
-            } catch (Exception e) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
-            }
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
         }
+    }
 
 
-        // add a DELETE method to clear all products from the current users cart
-        // https://localhost:8080/cart
-        @DeleteMapping
-        public void clearCart (Principal principal){
-            try {
-                String userName = principal.getName();
-                User user = userDao.getByUserName(userName);
-                int userId = user.getId();
+    // add a DELETE method to clear all products from the current users cart
+    // https://localhost:8080/cart
+    @DeleteMapping
+    public void clearCart(Principal principal) {
 
-                shoppingCartDao.clearCart(userId);
-
-            } catch (Exception e) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
-            }
+        if (principal == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
+        String userName = principal.getName();
+        User user = userDao.getByUserName(userName);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found");
+        }
+        int userId = user.getId();
+
+        shoppingCartDao.clearCart(userId);
+
 
     }
+
+}
