@@ -1,136 +1,141 @@
 package org.yearup.data.mysql;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Component;
-import org.yearup.data.ProductDao;
 import org.yearup.data.ShoppingCartDao;
 import org.yearup.models.Product;
 import org.yearup.models.ShoppingCart;
 import org.yearup.models.ShoppingCartItem;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
+import java.math.BigDecimal;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Connection;
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.SQLException;
 
 @Component
 public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDao {
-    private final ProductDao productDao;
-    @Autowired
-    public MySqlShoppingCartDao(DataSource dataSource, ProductDao productDao) {
+    public MySqlShoppingCartDao(DataSource dataSource) {
         super(dataSource);
-        this.productDao = productDao;
     }
+
     @Override
     public ShoppingCart getByUserId(int userId) {
+        // Join shopping_cart + products so each cart item has full Product details
+        String sql =
+                "SELECT " +
+                        " sc.product_id, sc.quantity, " +
+                        " p.name, p.price, p.category_id, p.description, p.subcategory, p.image_url, p.stock, p.featured " +
+                        "FROM shopping_cart sc " +
+                        "JOIN products p ON p.product_id = sc.product_id " +
+                        "WHERE sc.user_id = ? " +
+                        "ORDER BY sc.product_id;";
+
         ShoppingCart cart = new ShoppingCart();
-        Map<Integer, ShoppingCartItem> items = new HashMap<>();
 
-        String sql = """
-                SELECT sc.product_id, sc.quantity, p.price
-                FROM shopping_cart sc
-                JOIN products p on sc.product_id = p.product_id
-                WHERE sc.user_id = ?""";
         try (Connection connection = getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, userId);
 
-            preparedStatement.setInt(1, userId);
-            ResultSet resultSet = preparedStatement.executeQuery();
+            try (ResultSet row = ps.executeQuery()) {
+                while (row.next()) {
+                    // Build Product from DB row
+                    Product product = new Product(
+                            row.getInt("product_id"),
+                            row.getString("name"),
+                            row.getBigDecimal("price"),
+                            row.getInt("category_id"),
+                            row.getString("description"),
+                            row.getString("subcategory"),
+                            row.getInt("stock"),
+                            row.getBoolean("featured"),
+                            row.getString("image_url")
+                    );
 
-            while (resultSet.next()) {
-                ShoppingCartItem item = new ShoppingCartItem();
-                Product product = productDao.getById(resultSet.getInt("product_id"));
-                item.setProduct(product);
-                item.setQuantity(resultSet.getInt("quantity"));
+                    // Build ShoppingCartItem using Product + quantity
+                    ShoppingCartItem item = new ShoppingCartItem();
+                    item.setProduct(product);
+                    item.setQuantity(row.getInt("quantity"));
+                    item.setDiscountPercent(BigDecimal.ZERO);
 
-                items.put(product.getProductId(), item);
+                    // ShoppingCart stores items in a Map keyed by productId
+                    cart.add(item);
 
+                }
             }
-            cart.setItems(items);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
 
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving shopping cart.", e);
         }
+
         return cart;
     }
+
     @Override
-    public void addProductToCart(int userId, int productId) {
-        String selectSql = """
-                SELECT quantity
-                FROM shopping_cart
-                WHERE user_id = ? AND product_id = ?""";
-        String insertSql = """
-                INSERT INTO shopping_cart (user_id, product_id, quantity)
-                VALUES (?, ?, 1)""";
-        String updateSql = """
-                UPDATE shopping_cart
-                SET quantity = quantity + 1
-                WHERE user_id = ?
-                AND product_id =?""";
-        try (Connection connection = getConnection()) {
-            PreparedStatement selectStatement =
-                    connection.prepareStatement(selectSql);
-            selectStatement.setInt(1, userId);
-            selectStatement.setInt(2, productId);
+    public void addProduct(int userId, int productId) {
+        // If (user_id, product_id) is UNIQUE, this will increment quantity instead of duplicating rows
+        String sql =
+                "INSERT INTO shopping_cart (user_id, product_id, quantity) " +
+                        "VALUES (?, ?, 1) " +
+                        "ON DUPLICATE KEY UPDATE quantity = quantity + 1;";
 
-            ResultSet resultSet = selectStatement.executeQuery();
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, productId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error adding product to cart.", e);
+        }
+    }
 
-            if (resultSet.next()) {
-                PreparedStatement updateStatement =
-                        connection.prepareStatement(updateSql);
-                updateStatement.setInt(1, userId);
-                updateStatement.setInt(2, productId);
-                updateStatement.executeUpdate();
-            } else {
-                PreparedStatement insertStatement =
-                        connection.prepareStatement(insertSql);
-                insertStatement.setInt(1, userId);
-                insertStatement.setInt(2, productId);
-                insertStatement.executeUpdate();
+    @Override
+    public void updateQuantity(int userId, int productId, int quantity) {
+        // If quantity is 0, remove the item from the cart
+        if (quantity == 0) {
+            String deleteSql = "DELETE FROM shopping_cart WHERE user_id = ? AND product_id = ?;";
+
+            try (Connection connection = getConnection();
+                 PreparedStatement ps = connection.prepareStatement(deleteSql)) {
+                ps.setInt(1, userId);
+                ps.setInt(2, productId);
+                ps.executeUpdate();
+                return;
+            } catch (SQLException e) {
+                throw new RuntimeException("Error removing cart item.", e);
             }
-        }catch (SQLException e) {
-            throw new RuntimeException(e);
         }
 
+        // Otherwise update quantity normally
+        String sql =
+                "UPDATE shopping_cart " +
+                        "SET quantity = ? " +
+                        "WHERE user_id = ? AND product_id = ?;";
 
-    }
-    @Override
-    public void updateProductQuantity(int userId,int productId, int quantity) {
-
-    }
-    @Override
-    public ShoppingCartItem getItemByUserAndProduct(int userId, int productId) {
-        String sql = """
-                SELECT user_id, product_id, quantity
-                FROM shopping_cart
-                WHERE user_id = ?
-                AND products_id = ?""";
         try (Connection connection = getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)){
-
-            preparedStatement.setInt(1, userId);
-            preparedStatement.setInt(2, productId);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if(resultSet.next()) {
-                ShoppingCartItem item = new ShoppingCartItem();
-                item.setQuantity(resultSet.getInt("quantity"));
-                return item;
-
-            }
-            return null;
-
-        }catch (SQLException e) {
-            throw new RuntimeException(e);
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, quantity);
+            ps.setInt(2, userId);
+            ps.setInt(3, productId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error updating cart quantity.", e);
         }
     }
 
     @Override
     public void clearCart(int userId) {
+        // Remove all items from the user's cart
+        String sql = "DELETE FROM shopping_cart WHERE user_id = ?;";
 
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error clearing shopping cart.", e);
+        }
     }
 }
+

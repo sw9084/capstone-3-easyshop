@@ -10,9 +10,10 @@ class ShoppingCartService {
     addToCart(productId)
     {
         const url = `${config.baseUrl}/cart/products/${productId}`;
+        const headers = userService.getHeaders();
         // const headers = userService.getHeaders();
 
-        axios.post(url, {})// ,{headers})
+        axios.post(url, {}, { headers })// ,{headers})
             .then(response => {
                 this.setCart(response.data)
 
@@ -47,8 +48,8 @@ class ShoppingCartService {
     {
 
         const url = `${config.baseUrl}/cart`;
-
-        axios.get(url)
+       const headers = userService.getHeaders();
+        axios.get(url, { headers })
             .then(response => {
                 this.setCart(response.data)
 
@@ -145,8 +146,9 @@ class ShoppingCartService {
     {
 
         const url = `${config.baseUrl}/cart`;
+        const headers = userService.getHeaders();
 
-        axios.delete(url)
+        axios.delete(url, { headers })
              .then(response => {
                  this.cart = {
                      items: [],

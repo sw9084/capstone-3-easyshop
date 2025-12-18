@@ -15,14 +15,13 @@ import java.util.List;
 
 // add the annotations to make this a REST controller
 // add the annotation to make this controller the endpoint for the following url
-    // http://localhost:8080/categories
+// http://localhost:8080/categories
 // add annotation to allow cross site origin requests
 
 @RestController
 @RequestMapping("/categories")
 @CrossOrigin
-public class CategoriesController
-{
+public class CategoriesController {
     private CategoryDao categoryDao;
     private ProductDao productDao;
 
@@ -36,16 +35,14 @@ public class CategoriesController
 
     // add the appropriate annotation for a get action
     @GetMapping
-    public List<Category> getAll()
-    {
+    public List<Category> getAll() {
         // find and return all categories
         return categoryDao.getAllCategories();
     }
 
     // add the appropriate annotation for a get action
     @GetMapping("/{id}")
-    public ResponseEntity<Category> getById(@PathVariable int id)
-    {
+    public ResponseEntity<Category> getById(@PathVariable int id) {
         Category category = categoryDao.getById(id);
 
         if (category == null) {
@@ -54,6 +51,7 @@ public class CategoriesController
         return ResponseEntity.ok(category);
 
     }
+
     @GetMapping("/{id}/products")
     public List<Product> getProductsByCategory(@PathVariable int id) {
         return productDao.search(id, null, null, null);
@@ -63,15 +61,13 @@ public class CategoriesController
     // https://localhost:8080/categories/1/products
 
 
-
     // add annotation to call this method for a POST action
     // add annotation to ensure that only an ADMIN can call this function
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Category> addCategory(@RequestBody Category category)
-    {
-       Category created = categoryDao.create(category);
-       return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    public ResponseEntity<Category> addCategory(@RequestBody Category category) {
+        Category created = categoryDao.create(category);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     // add annotation to call this method for a PUT (update) action - the url path must include the categoryId
@@ -79,8 +75,7 @@ public class CategoriesController
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateCategory(@PathVariable int id, @RequestBody Category category)
-    {
+    public void updateCategory(@PathVariable int id, @RequestBody Category category) {
         categoryDao.update(id, category);
         // update the category by id
     }
@@ -91,8 +86,7 @@ public class CategoriesController
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCategory(@PathVariable int id)
-    {
+    public void deleteCategory(@PathVariable int id) {
         categoryDao.delete(id);
         // delete the category by id
     }

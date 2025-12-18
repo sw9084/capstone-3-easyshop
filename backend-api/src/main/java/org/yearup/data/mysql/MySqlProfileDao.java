@@ -1,12 +1,14 @@
 package org.yearup.data.mysql;
 
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
-import org.yearup.models.Profile;
 import org.yearup.data.ProfileDao;
+import org.yearup.models.Profile;
 
 import javax.sql.DataSource;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 @Component
 public class MySqlProfileDao extends MySqlDaoBase implements ProfileDao {
@@ -69,6 +71,7 @@ public class MySqlProfileDao extends MySqlDaoBase implements ProfileDao {
             throw new RuntimeException(e);
         }
     }
+
     @Override
     public void update(Profile profile) {
 

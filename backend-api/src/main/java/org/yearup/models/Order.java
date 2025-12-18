@@ -1,15 +1,18 @@
 package org.yearup.models;
-import java.time.LocalDate;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Order {
     private int orderId;
     private int userId;
-    private LocalDate sate;
-    private String address;
-    private String city;
-    private String state;
-    private String zip;
-    private double shippingAmount;
+    private LocalDateTime orderDate;
+    private String address = "";
+    private String city = "";
+    private String state = "";
+    private String zip = "";
+    private List<OrderLineItem> lineItems = new ArrayList<>();
 
     public int getOrderId() {
         return orderId;
@@ -27,12 +30,12 @@ public class Order {
         this.userId = userId;
     }
 
-    public LocalDate getSate() {
-        return sate;
+    public LocalDateTime getOrderDate() {
+        return orderDate;
     }
 
-    public void setSate(LocalDate sate) {
-        this.sate = sate;
+    public void setOrderDate(LocalDateTime orderDate) {
+        this.orderDate = orderDate;
     }
 
     public String getAddress() {
@@ -67,15 +70,11 @@ public class Order {
         this.zip = zip;
     }
 
-    public double getShippingAmount() {
-        return shippingAmount;
+    public List<OrderLineItem> getLineItems() {
+        return lineItems;
     }
 
-    public void setShippingAmount(double shippingAmount) {
-        this.shippingAmount = shippingAmount;
-    }
-
-    public Order() {
-
+    public void setLineItems(List<OrderLineItem> lineItems) {
+        this.lineItems = lineItems;
     }
 }
