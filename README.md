@@ -127,6 +127,11 @@ Testing flow:
 
 4. Create an order
 
+## Screenshot
+Home Page
+  ![Home Page](screenshots/Screenshot 2025-12-19 102514.png)
+
+
 ---
 
 ## How to Run the Project
