@@ -4,227 +4,180 @@ This project contains a Java Spring Boot backend and a static HTML/CSS/JavaScrip
 
 ## 📌 Overview
 
-EasyShop is a full-stack e-commerce web application built as part of the Year Up / Pluralsight Capstone 3 project.
 
-The application allows users to browse products, register and log in securely, manage a user profile, 
-add items to a shopping cart, and place orders.
 
-This project demonstrates real-world backend and frontend integration using 
-**Java Spring Boot**, **MySQL**, and a **vanilla JavaScript frontend**.
+                       ## Project Description
 
----
+This project is a Spring Boot REST API for an e-commerce application called EasyShop. The goal of this project was to 
+build the backend services that support user authentication, shopping cart functionality, and order checkout.
 
-## 🛠️ Technologies Used
+Users can register and log in to receive a JWT token, which is required to access protected endpoints.
+Authenticated users can add products to their shopping cart, view the cart, and create an order from the cart. 
+Once an order is created, the shopping cart is cleared. The project uses a MySQL database and follows a DAO-based 
+architecture to separate database logic from controllers. All endpoints were tested using Insomnia.
 
-               ### Backend
 
-  ➡️Java 17
+                     ## Technologies Used
 
-- Spring Boot
+    - Java
 
-- Spring Security (JWT Authentication)
+    - Spring Boot
 
-- Maven
+    - Spring Security (JWT Authentication)
 
-- MySQL
+    - MySQL
 
-- JDBC / DAO pattern
+    - JDBC / DAO Pattern
 
-                ### Frontend
+    - Maven
 
-- HTML
-
-- CSS
-
-- JavaScript (Vanilla JS)
-
-- Live Server (VS Code)
-
-               ### Tools
-
-- IntelliJ IDEA
-
-- Visual Studio Code
-
-- MySQL Workbench
-
-- Insomnia (API testing)
+    - Insomnia
 
 ---
 
-             ## 🧱 Project Structure
+## Features
 
-   capstone-3
-│
+- User registration and login
 
-     ├── backend-api
-
-│   ├── controllers
-
-│   ├── data (DAOs)
-
-│   ├── models
-
-│   ├── security
-
-│   └── EasyshopApplication.java
-
-│
-
-├── frontend-ui
-
-│   ├── css
-
-│   ├── images
-
-│   ├── js
-
-│   ├── templates
-
-│   └── index.html
-
-│
-
-└── README.md
- 
----
-
-             ## 🔐 Authentication & Security
-
-   - User authentication is handled using **JWT (JSON Web Tokens)**
-
-  - Passwords are securely hashed
-
-  - Protected endpoints require a valid token
-
-  - Spring Security ensures role-based access control
-
-          ### Auth Endpoints
-
-                | Method | Endpoint | Description |
-
-                 |------|---------|-------------|
-
-           | POST | `/register` | Create a new user |
-
-           | POST | `/login` | Authenticate user & receive JWT |
-
----
-
-         ## 👤 User Features
-
-- Register a new account
-
-- Log in and receive a JWT token
-
-- View and update user profile
-
-- Secure session handling on the frontend
-
----
-
-## 🛒 Shopping Features
-
-- View all products
-
-- Filter products by category and price
+- JWT-based authentication
 
 - Add products to shopping cart
 
-- View cart
+- View shopping cart
 
-- Clear cart
+- Create orders from shopping cart
 
-- Create an order from cart items
+- Clear cart after successful checkout
+
+- Secure endpoints using authentication
 
 ---
 
-## 🔁 API Endpoints (Core)
+## Authentication
 
-### Categories
+- Users log in using the `/login` endpoint
 
-GET /categories
+- A JWT token is returned on successful login
 
-### Products
+- Protected endpoints require the following header:
 
-GET /products
+Authorization: Bearer <token>
 
-GET /products/{id}
+The authenticated user is accessed using `Principal`.
 
-### Cart
+---
 
-GET    /cart
+## API Endpoints
 
-POST   /cart/products/{productId}
+### Authentication
+
+POST /register
+
+POST /login
+
+### Shopping Cart
+
+POST /cart/products/{productId}
+
+GET /cart
 
 DELETE /cart
 
 ### Orders
 
 POST /orders
- 
----
 
-## 🧪 Testing
-
-- All backend endpoints were tested using **Insomnia**
-
-- Authentication, authorization, and error handling were validated
-
-- Frontend behavior was tested through the browser UI
+GET /orders
 
 ---
 
-## 🚀 Running the Application
+## Implementation Notes
 
-### Backend
+- JWT authentication is required for cart and order endpoints
 
-1. Open `backend-api` in IntelliJ
+- Orders cannot be created if the shopping cart is empty
 
-2. Ensure MySQL is running
+- Order creation process:
 
-3. Update `application.properties` with database credentials
+    - Create the order
 
-4. Run `EasyshopApplication`
+    - Insert order line items
 
-Backend runs on:
- 
+    - Clear the shopping cart
+
+- SQL queries use prepared statements
+
+- Reserved SQL keywords are handled correctly
+
+- Error handling uses appropriate HTTP status codes
+
 ---
 
-### Frontend
+## Testing
 
-1. Open `frontend-ui` in VS Code
+All endpoints were tested using Insomnia.
 
-2. Right-click `index.html`
+Testing flow:
 
-3. Select **Open with Live Server**
+1. Register or log in
 
-Frontend runs on:
-  http://127.0.0.1:5500
- 
+2. Store JWT token in the Insomnia environment
+
+3. Add products to the shopping cart
+
+4. Create an order
+
 ---
 
-## 🧠 What I Learned
+## How to Run the Project
+
+1. Clone the repository
+
+2. Create a MySQL database
+
+3. Configure database credentials in application.properties
+
+4. Run the Spring Boot application
+
+5. Test endpoints using Insomnia
+
+---
+
+## What I Learned
 
 - How to build a REST API using Spring Boot
 
-- Implementing JWT authentication
+- How JWT authentication works in a backend application
 
-- Using the DAO pattern for database access
+- How to secure endpoints using Spring Security
 
-- Connecting frontend JavaScript to a secured backend
+- How to use the DAO pattern with JDBC and MySQL
 
-- Managing user sessions and authorization
+- How to debug authentication issues versus server or SQL errors
 
-- Debugging full-stack issues across frontend and backend
+- How to test API endpoints using Insomnia
 
 ---
 
-## 🌟 Author
+## Challenges Faced
 
-**Bethlehem**
+One of the biggest challenges was debugging errors during order creation.
 
-Year Up United – Application Development Track
+At first, authentication and cart functionality were working, but order creation
 
-Capstone 3 Project
+failed with a server error. This required tracing the request through the controller,
+
+DAO, and SQL queries.
+
+I learned how important it is to carefully debug SQL syntax and understand how
+
+database errors can surface only after authentication succeeds. This project also
+
+helped me become more confident in troubleshooting full-stack backend issues.
+
+---
+
+## Project Status
+
+Capstone 3 requirements completed and fully tested.
  
