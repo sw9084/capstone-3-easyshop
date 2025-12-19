@@ -5,8 +5,9 @@ class ProfileService
     loadProfile()
     {
         const url = `${config.baseUrl}/profile`;
+        const headers = userService.getHeaders();
 
-        axios.get(url)
+        axios.get(url, { headers })
              .then(response => {
                  templateBuilder.build("profile", response.data, "main")
              })
@@ -23,15 +24,19 @@ class ProfileService
     {
 
         const url = `${config.baseUrl}/profile`;
+        const headers = userService.getHeaders();
 
-        axios.put(url, profile)
-             .then(() => {
-                 const data = {
-                     message: "The profile has been updated."
-                 };
+        axios.put(url, profile, { headers })
+             .then(response => {
+             const data = {
+             message: "The profile has been updated."
+                              };
+             templateBuilder.append("message", data, "errors");
 
-                 templateBuilder.append("message", data, "errors")
+                 this.loadProfile();
              })
+
+
              .catch(error => {
                  const data = {
                      error: "Save profile failed."
