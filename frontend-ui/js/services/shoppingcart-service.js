@@ -187,12 +187,25 @@ class ShoppingCartService {
         catch (e) {
 
         }
+
+        }
     }
+    function checkout() {
+    axios.post('/api/orders', null, {
+    headers: userService.getHeaders() })
+    .then(() => {
+    alert('Order placed successfully!');
+    cartService.loadCart();
+    })
+    .catch(error => {
+    console.error(error);
+    alert('Checkout failed');
+    });
 }
-
-
-
-
+   function clearCart() {
+   cartService.clearCart();
+   cartService.loadCart();
+   }
 
 document.addEventListener('DOMContentLoaded', () => {
     cartService = new ShoppingCartService();
@@ -203,3 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+window.clearCart = clearCart;
+window.checkout = checkout;
+
+

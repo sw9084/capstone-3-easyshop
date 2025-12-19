@@ -6,13 +6,15 @@ This project contains a Java Spring Boot backend and a static HTML/CSS/JavaScrip
 
 EasyShop is a full-stack e-commerce web application built as part of the Year Up / Pluralsight Capstone 3 project.
 
-The application allows users to browse products, register and log in securely, manage a user profile, add items to a shopping cart, and place orders.
+The application allows users to browse products, register and log in securely, manage a user profile, 
+add items to a shopping cart, and place orders.
 
-This project demonstrates real-world backend and frontend integration using **Java Spring Boot**, **MySQL**, and a **vanilla JavaScript frontend**.
+This project demonstrates real-world backend and frontend integration using 
+**Java Spring Boot**, **MySQL**, and a **vanilla JavaScript frontend**.
 
 ---
 
-                                                    ## 🛠️ Technologies Used
+## 🛠️ Technologies Used
 
                ### Backend
 
@@ -198,7 +200,7 @@ Backend runs on:
 3. Select **Open with Live Server**
 
 Frontend runs on:
-http://127.0.0.1:5500
+  http://127.0.0.1:5500
  
 ---
 
