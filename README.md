@@ -129,10 +129,13 @@ Testing flow:
 
 ## Screenshot
 Home Page
-  ![Home Page](screenshots/Screenshot 2025-12-19 102514.png)
+![img_1.png](img_1.png)
 
+Profile Page
+![img_2.png](img_2.png)
+View Cart Page
+![img_3.png](img_3.png)
 
----
 
 ## How to Run the Project
 
@@ -175,12 +178,8 @@ failed with a server error. This required tracing the request through the contro
 DAO, and SQL queries.
 
 I learned how important it is to carefully debug SQL syntax and understand how
+database errors can surface only after authentication succeeds. 
 
-database errors can surface only after authentication succeeds. This project also
-
-helped me become more confident in troubleshooting full-stack backend issues.
-
----
 
 ## Project Status
 

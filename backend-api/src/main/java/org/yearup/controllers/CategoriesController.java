@@ -25,7 +25,7 @@ public class CategoriesController
     private CategoryDao categoryDao;
     private ProductDao productDao;
 
-    // create an Autowired controller to inject the categoryDao and ProductDaowi
+    // create an Autowired controller to inject the categoryDao and ProductDao
     @Autowired
     public CategoriesController(CategoryDao categoryDao, ProductDao productDao)
     {
